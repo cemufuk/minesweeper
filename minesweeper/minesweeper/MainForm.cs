@@ -1,13 +1,22 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
+using System.Data;
+using System.Drawing;
 using System.Linq;
+using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
 namespace minesweeper
 {
-    static class Program
+    public partial class MainForm : Form
     {
+        public MainForm()
+        {
+            InitializeComponent();
+        }
+
         /// <summary>
         /// The main entry point for the application.
         /// </summary>
@@ -16,7 +25,7 @@ namespace minesweeper
         {
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
-            Application.Run(new Form1());
+            Application.Run(new MainForm());
         }
     }
 }
