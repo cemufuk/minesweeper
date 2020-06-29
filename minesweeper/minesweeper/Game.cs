@@ -30,11 +30,11 @@ namespace minesweeper
             var board = new Board(20, 20);
 
             var cell = new PictureBox[board.CellCount];
-            var p = new Point[board.CellCount];
+            
 
             for (int i = 0, x = 0, y = 0; i < board.CellCount; ++i, ++x)
             {
-                if (x == 20)
+                if (x == board.Width)
                 {
                     y += 1;
                     x = 0;
