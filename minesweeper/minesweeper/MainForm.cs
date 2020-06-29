@@ -27,5 +27,10 @@ namespace minesweeper
             Application.SetCompatibleTextRenderingDefault(false);
             Application.Run(new MainForm());
         }
+
+        private void MainForm_Load(object sender, EventArgs e)
+        {
+            Game.StartGame(panel1);
+        }
     }
 }
