@@ -62,9 +62,9 @@ namespace minesweeper
 
         private static void CellClick(Board board, List<Cell> cells, int i)
         {
-            cells[i].IsOpened = true;
+            //cells[i].IsOpened = true;
 
-            if (cells[i].IsBomb == true)
+            if (cells[i].IsBomb)
             {
                 foreach (var cell in cells)
                 {
@@ -78,24 +78,26 @@ namespace minesweeper
 
             SetImages(cells[i]);
             
-            if (cells[i].MinesAround == 0)
-            {
-                var list = CellsAround(cells[i], board);
-                OpenEmptyCells(cells, list, board);
+            var list = CellsAround(cells[i], board);
+            OpenEmptyCells(cells, cells[i], list, board);
 
-            }
         }
 
-        private static void OpenEmptyCells(List<Cell> cells, List<int> idList, Board board)
+        private static void OpenEmptyCells(List<Cell> cells, Cell cell, List<int> idList, Board board)
         {
+            if (cell.IsOpened == false && cell.MinesAround == 0)
+            {
+                cell.IsOpened = true;
                 foreach (var id in idList)
                 {
-                    cells[id].IsOpened = true;
+                    //cells[id].IsOpened = true;
                     SetImages(cells[id]);
-
                     var _idList = CellsAround(cells[id], board);
-                    OpenEmptyCells(cells, _idList, board);
+                    OpenEmptyCells(cells, cells[id], _idList, board);
                 }
+
+            }
+                
         }
 
         private static int CheckMines(List<Cell> cells, List<int> idList)
@@ -111,7 +113,6 @@ namespace minesweeper
 
             return mineCount;
         }
-
         private static List<int> CellsAround(Cell cell, Board board)
         {
             var xCoor = cell.XCoordinate;
