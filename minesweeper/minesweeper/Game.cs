@@ -8,6 +8,8 @@ namespace minesweeper
 {
     internal class Game
     {
+        public static bool GameStarted = false;
+
         public static void StartGame(Panel panel)
         {
             var board = new Board(10, 10, 10);
@@ -42,11 +44,6 @@ namespace minesweeper
                 var y1 = y;
                 cells[i].Picturebox.Click += (s, e) => { CellClick(board, cells, i1); };
             }
-
-            // set mines to random cells
-            SetMines(board.MineCount, cells);
-            GetCellMines(cells, board);
-
         }
 
         private static void GetCellMines(List<Cell> cells, Board board)
@@ -62,6 +59,15 @@ namespace minesweeper
 
         private static void CellClick(Board board, List<Cell> cells, int i)
         {
+            // Set mines if this is the first cell click
+            if (!GameStarted)
+            {
+                // set mines to random cells but exclude this clicked cell
+                SetMines(board.MineCount, cells, i);
+                GetCellMines(cells, board);
+                GameStarted = true;
+            }
+
             //cells[i].IsOpened = true;
 
             if (cells[i].IsBomb)
@@ -73,6 +79,7 @@ namespace minesweeper
                 }
 
                 MessageBox.Show("You Lost!");
+                // GameStarted = false;
                 return;
             }
 
@@ -167,10 +174,13 @@ namespace minesweeper
                     break;
             }
         } 
-        private static void SetMines(int mineCount, List <Cell> cells)
+        private static void SetMines(int mineCount, List <Cell> cells, int exclude)
         {
             var list = new List<Cell>(cells);
             var rnd = new Random();
+
+            // Remove the first clicked cell from the list to avoid being marked as possible mine field
+            list.RemoveAt(exclude);
 
             for (var i = 0; i < mineCount; ++i)
             {
