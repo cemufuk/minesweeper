@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Drawing;
+using System.Linq;
 using System.Windows.Forms;
 
 namespace minesweeper
@@ -40,12 +41,55 @@ namespace minesweeper
                 cells[i].IsFlagged = false;
                 cells[i].IsOpened = false;
                 var i1 = i;
-                var x1 = x;
-                var y1 = y;
-                cells[i].Picturebox.Click += (s, e) => { CellClick(board, cells, i1); };
+
+                cells[i].Picturebox.MouseUp += (s, e) =>
+                {
+                    switch (e.Button)
+                    {
+                        case MouseButtons.Left:
+                            CellLeftClick(board, cells, i1);
+                            break;
+                        case MouseButtons.Right:
+                            CellRightClick(board, cells, cells[i1]);
+                            break;
+                    }
+                };
             }
         }
 
+        private static void CellRightClick(Board board, List<Cell> cells, Cell cell)
+        {
+            if (GameStarted && !cell.IsOpened)
+            {
+                if (!cell.IsFlagged)
+                {
+                    cell.IsFlagged = true;
+                    cell.Picturebox.Image = Resources.flagged;
+                    if (cell.IsBomb)
+                    {
+                        board.FlaggedMineCount++;
+                    }
+                }
+
+                else if (cell.IsFlagged)
+                {
+                    cell.IsFlagged = false;
+                    cell.Picturebox.Image = Resources.closed;
+                    if (cell.IsBomb)
+                    {
+                        board.FlaggedMineCount--;
+                    }
+                }
+
+                if (board.FlaggedMineCount == board.MineCount)
+                {
+                    MessageBox.Show("You Won!");
+                    // GameStarted = false;
+                    return;
+                }
+                
+            }
+        }
         private static void GetCellMines(List<Cell> cells, Board board)
         {
             foreach (var cell in cells)
@@ -55,9 +99,7 @@ namespace minesweeper
                 cell.MinesAround = mineCount;
             }
         }
-
-
-        private static void CellClick(Board board, List<Cell> cells, int i)
+        private static void CellLeftClick(Board board, List<Cell> cells, int i)
         {
             // Set mines if this is the first cell click
             if (!GameStarted)
@@ -68,14 +110,11 @@ namespace minesweeper
                 GameStarted = true;
             }
 
-            //cells[i].IsOpened = true;
-
             if (cells[i].IsBomb)
             {
-                foreach (var cell in cells)
+                foreach (var cell in cells.Where(cell => cell.IsBomb))
                 {
-                    if (cell.IsBomb == true)
-                        cell.Picturebox.Image = Resources.bomb;
+                    cell.Picturebox.Image = Resources.bomb;
                 }
 
                 MessageBox.Show("You Lost!");
@@ -89,24 +128,22 @@ namespace minesweeper
             OpenEmptyCells(cells, cells[i], list, board);
 
         }
-
         private static void OpenEmptyCells(List<Cell> cells, Cell cell, List<int> idList, Board board)
         {
-            if (cell.IsOpened == false && cell.MinesAround == 0)
+            if (!cell.IsOpened && cell.MinesAround == 0)
             {
                 cell.IsOpened = true;
                 foreach (var id in idList)
                 {
-                    //cells[id].IsOpened = true;
                     SetImages(cells[id]);
                     var _idList = CellsAround(cells[id], board);
                     OpenEmptyCells(cells, cells[id], _idList, board);
+                    cells[id].IsOpened = true;
                 }
 
             }
                 
         }
-
         private static int CheckMines(List<Cell> cells, List<int> idList)
         {
             var mineCount = 0;

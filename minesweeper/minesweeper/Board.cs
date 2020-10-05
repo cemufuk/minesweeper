@@ -9,6 +9,7 @@ namespace minesweeper
             Width = width;
             Height = height;
             MineCount = mineCount;
+            FlaggedMineCount = 0;
             CellCount = width * height;
             Cells = new List<Cell>();
 
@@ -25,6 +26,7 @@ namespace minesweeper
         public int Width { get; }
         public int Height { get; }
         public int MineCount { get; }
+        public int FlaggedMineCount { get; set; }
         public int CellCount { get; }
         public List<Cell> Cells { get; set; }
     }
